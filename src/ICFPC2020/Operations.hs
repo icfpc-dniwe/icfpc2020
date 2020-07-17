@@ -46,12 +46,12 @@ builtinMul = fun2 "mul" op
         op _ _ = Nothing
 
 churchTrue :: Function
-churchTrue = fun2 "true" op
+churchTrue = fun2 "t" op
   where op x _ = Just x
         op _ _ = Nothing
 
 churchFalse :: Function
-churchFalse = fun2 "false" op
+churchFalse = fun2 "f" op
   where op _ y = Just y
         op _ _ = Nothing
 
@@ -64,22 +64,22 @@ cons = fun2 "cons" op
         op _ _ = Nothing
 
 combC :: Function  -- TODO:
-combC = fun3 "combC" op
+combC = fun3 "c" op
   where op (VFunction fun) x y = Just $ fun x y
         op _ _ _ = Nothing
 
 combB :: Function  -- TODO:
-combB = fun3 "combB" op
+combB = fun3 "b" op
   where op (VFunction fx) (VFunction fy) z = Just $ fx $ fy z
         op _ _ _ = Nothing
 
 combS :: Function  -- TODO:
-combS = fun3 "combS" op
+combS = fun3 "s" op
   where op (VFunction fx) (VFunction fy) z = Just $ fx z (fy z)
         op _ _ _ = Nothing
 
 combI :: Function
-combI = fun1 "combI" Just
+combI = fun1 "i" Just
 
 car :: Function
 car = fun1 "car" op
@@ -105,7 +105,7 @@ negate = fun1 "neg" op
         op _ = Nothing
 
 buildinDiv :: Function
-buildinDiv = fun2 "duv" op
+buildinDiv = fun2 "div" op
   where op (VNumber x) (VNumber y) = Just $ VNumber x + y
 
 

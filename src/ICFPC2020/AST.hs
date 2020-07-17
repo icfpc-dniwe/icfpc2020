@@ -6,14 +6,6 @@ import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS
 import Control.Monad.Reader
 
-data Token = TNumber !Int
-           | TMacro !ByteString
-           | TOpenList
-           | TComma
-           | TCloseList
-           | TNil
-           deriving (Show, Eq)
-
 data Value = VNumber !Int
            | VMacro !ByteString
            | VList ![Value]
@@ -21,7 +13,8 @@ data Value = VNumber !Int
            | VAp
            | VApFun !Function
 
-type Declaration = (String, Value)
+type Macro = (String, [Value])
+type Program = HashMap String [Value]
 
 instance Show Value where
   show (VNumber a) = show a
