@@ -24,10 +24,15 @@ dependencies:
 - http-conduit >= 2.3
 - utf8-string >= 1.0
 
+default-extensions:
+- LambdaCase
+
 # In a more realistic setting, you will probably want to write a library that
 # is declared here and use it as a dependency for your binary.
-# library
-#   source-dirs: src
+library:
+  source-dirs: src
+  ghc-options:
+    - -O2
 
 executables:
   main:
@@ -39,6 +44,6 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     # Here you can add dependencies specific to your binary, including your
-    # own libarary.
+    # own library.
     # dependencies:
     # - icfpc-mmxx-starterkit-haskell
