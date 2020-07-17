@@ -1,23 +1,29 @@
+{-# LANGUAGE LambdaCase #-}
+
 module ICFPC2020.Operations where
 
 import ICFPC2020.AST
 
-fun1 :: String -> (Value -> [Value]) -> Function
+fun1 :: String -> (Value -> Maybe Value) -> Function
 fun1 name f = ret
   where ret = Function { funName = name
                        , funApply = f
+                       , funRepresent = [VFunction ret]
                        }
 
-funArg :: String -> (Value -> Function) -> Function
-funArg name constr = ret
-  where ret = fun1 name $ \arg0 -> let f = constr arg0
-                                   in f { funName = "ap " ++ funName f ++ " " ++ show arg0 }
+fun2 :: String -> (Value -> Value -> Maybe Value) -> Function
+fun2 name f = ret
+  where ret = fun1 name $ \arg1 -> Just $ VFunction $ Function { funName = name ++ "_ap"
+                                                               , funApply = \arg2 -> f arg1 arg2
+                                                               , funRepresent = [VAp, VFunction ret, arg1]
+                                                               }
 
-fun2 :: String -> (Value -> Value -> [Value]) -> Function
-fun2 name f = funArg name $ \arg0 -> fun1 name $ \arg1 -> f arg0 arg1
-
-fun3 :: String -> (Value -> Value -> Value -> [Value]) -> Function
-fun2 name f = funArg name $ \arg0 -> fun2 name $ \arg1 arg2 -> f arg0 arg1 arg2
+fun3 :: String -> (Value -> Value -> Value -> Maybe Value) -> Function
+fun3 name f = ret
+  where ret = fun2 name $ \arg1 -> Just $ VFunction $ Function { funName = name ++ "_ap"
+                                                               , funApply = \arg2 -> f arg1 arg2
+                                                               , funRepresent = [VAp, VFunction ret, arg1]
+                                                               }
 
 funNumber :: (Int -> Maybe Value) -> (Value -> Maybe Value)
 funNumber f (VNumber n) = f n

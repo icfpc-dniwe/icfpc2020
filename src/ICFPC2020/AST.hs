@@ -7,24 +7,22 @@ import qualified Data.ByteString.Char8 as BS
 import Control.Monad.Reader
 
 data Value = VNumber !Int
-           | VMacro !ByteString
+           | VVariable !String
            | VList ![Value]
            | VFunction !Function
            | VAp
-           | VApFun !Function
 
 type Macro = (String, [Value])
 type Program = HashMap String [Value]
 
 instance Show Value where
   show (VNumber a) = show a
-  show (VFunction f) = BS.unpack $ funName f
-  show (VMacro v) = BS.unpack v
-  show (VList []) = "nil"
+  show (VFunction f) = funName f
+  show (VVariable v) = v
   show (VList vs) = show vs
   show VAp = "ap"
-  show (VApFun f) = "ap " ++ BS.unpack (funName f)
 
-data Function = Function { funName :: String
-                         , funApply :: !(Value -> [Value])
+data Function = Function { funName :: !String
+                         , funApply :: !(Value -> Maybe Value)
+                         , funRepresent :: [Value]
                          }
