@@ -1,6 +1,6 @@
-name:                icfpc-mmxx-starterkit-haskell
+name:                icfpc2020
 # Please adjust the following fields.
-# version:             0.1.0.0
+version:             0.1.0.0
 # github:              "icfpcontest2020/starterkit-haskell"
 # license:             BSD3
 # author:              "Author name here"
@@ -23,9 +23,16 @@ dependencies:
 - base >= 4.7 && < 5
 - http-conduit >= 2.3
 - utf8-string >= 1.0
+- bytestring >= 0.10
+- attoparsec >= 0.13
+- vector >= 0.12
+- linear
+- repa >= 3.4
 
 default-extensions:
 - LambdaCase
+- RecordWildCards
+- OverloadedStrings
 
 # In a more realistic setting, you will probably want to write a library that
 # is declared here and use it as a dependency for your binary.
@@ -45,5 +52,5 @@ executables:
     - -with-rtsopts=-N
     # Here you can add dependencies specific to your binary, including your
     # own library.
-    # dependencies:
-    # - icfpc-mmxx-starterkit-haskell
+    dependencies:
+    - icfpc2020

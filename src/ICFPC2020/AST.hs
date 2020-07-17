@@ -13,6 +13,8 @@ data Value = VNumber !Int
            | VFunction !Function
            | VAp
 
+type Declaration = (String, Value)
+
 instance Show Value where
   show (VNumber a) = show a
   show (VFunction f) = funName f
