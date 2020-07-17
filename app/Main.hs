@@ -8,7 +8,7 @@ main = catch (
         args <- getArgs
         putStrLn ("Number of arguments: " ++ show (Prelude.length args))
         putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)
-        request' <- parseRequest ("POST " ++ (args!!0) ++ "/aliens/send?" ++ args!!1)
+        request' <- parseRequest ("POST " ++ (args!!0) ++ "/aliens/send?apiKey=" ++ args!!1)
         let request = setRequestBodyLBS (BLU.fromString (show 110110000111011111100001001111110101000000)) request'
         response <- httpLBS request
         let statuscode = show (getResponseStatusCode response)
