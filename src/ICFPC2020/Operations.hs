@@ -88,7 +88,7 @@ combI :: Function
 combI = fun1 "combI" Just
 
 car :: Function
-cat = fun1 "car" op
+car = fun1 "car" op
   where op (VList (x:xs)) = Just x
         op (VFunction fx) = Just (fx churchTrue)  -- TODO:
         op _ _ = Nothing
