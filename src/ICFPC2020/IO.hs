@@ -5,16 +5,11 @@ module ICFPC2020.IO
 import Control.Monad
 import Data.Functor
 import Data.List
-import qualified Data.Vector.Unboxed as VU
 import Control.Applicative
 import Data.Attoparsec.ByteString.Char8
 import qualified Data.Attoparsec.ByteString.Char8 as APC
-import Linear.V2
 import qualified Data.ByteString.Char8 as BS
 import qualified Data.ByteString.Builder as BB
-import Data.Array.Repa (Z(..), (:.)(..))
-import qualified Data.Array.Repa as R
-import qualified Data.Array.Repa.Repr.Unboxed as R
 
 import ICFPC2020.AST
   

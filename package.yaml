@@ -25,14 +25,15 @@ dependencies:
 - utf8-string >= 1.0
 - bytestring >= 0.10
 - attoparsec >= 0.13
-- vector >= 0.12
-- linear
-- repa >= 3.4
+- unordered-containers >= 0.2
+- mtl >= 2.2
 
 default-extensions:
 - LambdaCase
 - RecordWildCards
 - OverloadedStrings
+- GeneralizedNewtypeDeriving
+- DerivingStrategies
 
 # In a more realistic setting, you will probably want to write a library that
 # is declared here and use it as a dependency for your binary.
@@ -40,6 +41,7 @@ library:
   source-dirs: src
   ghc-options:
     - -O2
+    - -Wall
 
 executables:
   main:
@@ -48,6 +50,7 @@ executables:
     ghc-options:
     - -threaded
     - -O2
+    - -Wall
     - -rtsopts
     - -with-rtsopts=-N
     # Here you can add dependencies specific to your binary, including your

@@ -4,19 +4,24 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, hpack, http-conduit, stdenv
-      , utf8-string
+  f = { mkDerivation, attoparsec, base, bytestring, hpack
+      , http-conduit, mtl, stdenv, unordered-containers, utf8-string
       }:
       mkDerivation {
-        pname = "icfpc-mmxx-starterkit-haskell";
-        version = "0.0.0";
+        pname = "icfpc2020";
+        version = "0.1.0.0";
         src = ./.;
         isLibrary = true;
         isExecutable = true;
-        libraryHaskellDepends = [ base http-conduit utf8-string ];
+        libraryHaskellDepends = [
+          attoparsec base bytestring http-conduit mtl unordered-containers
+          utf8-string
+        ];
         libraryToolDepends = [ hpack ];
-        executableHaskellDepends = [ base http-conduit utf8-string ];
-        doHaddock = false;
+        executableHaskellDepends = [
+          attoparsec base bytestring http-conduit mtl unordered-containers
+          utf8-string
+        ];
         prePatch = "hpack";
         license = stdenv.lib.licenses.mit;
       };
