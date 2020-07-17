@@ -5,6 +5,7 @@ data Token = TNumber !Int
            | TOpenList
            | TComma
            | TCloseList
+           | TNil
            deriving (Show, Eq)
 
 data Value = VNumber !Int
