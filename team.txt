@@ -1,0 +1,8 @@
+Beware not to lose your API key. Use it:
+
+    to log in to the team profile (this page)
+    to send requests to Organizers' server
+
+API key: 46a9ed49d3414202898c86d9297976d9
+
+Deploy key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVspiWU3OYpyeitYb9wqMBhfmxY+o+ATWDhuJ0wq/hEsYUEzkKZhgOwB6ZBJf7BP1pqzA6YZHPF5AH8b7vDwEI2bW/Y77qTwR3aWpYhs1sM3wJejR819UA+0iBNU9OLSdr5er+Xi81Sf3TPWWIUYaIflp0DLVSsct4cM5SNhMCQ7DeFNGM85+8ux8VqAQazDRFq9WBHg+0dFs7n8j4BRywr0Rv42TrxDfqPH8p1R7OqKGqjFYJXh67iM3rBUh9htqfvUysCs30r4kalH4JANwj4GeZOrwhGXMrE6WaolIgL3XgJRK0+ZJepBtpUd7yH7An0FLk00qS0LAcJqLsHH+T generated-key
