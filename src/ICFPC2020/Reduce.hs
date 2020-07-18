@@ -6,12 +6,14 @@ import qualified Data.HashMap.Strict as HM
 
 import ICFPC2020.AST
 
+import Debug.Trace
+
 -- A bit magical -- it's injected when `ap nil` is encountered, otherwise it's not used.
 builtinNil :: Function
 builtinNil = fun1 "nil" ByName (\_ -> [valT])
 
 evalExpressionNoMacro :: Program -> [Value] -> [Value]
-evalExpressionNoMacro prog (VAp : expr) = evalExpression prog (funApply f aValue ++ expr3)
+evalExpressionNoMacro prog (VAp : expr) = evalExpression prog $  trace ("reducing " ++ funName f ++ " to " ++ show res) (res ++ expr3)
   where fValue : expr2 = evalExpression prog expr
         f = case fValue of
               VFunction sf -> sf
@@ -21,12 +23,13 @@ evalExpressionNoMacro prog (VAp : expr) = evalExpression prog (funApply f aValue
          case funStrategy f of
             ByValue -> evalExpression prog expr2
             ByName -> evalExpressionNoMacro prog expr2
+        res = funApply f aValue
 evalExpressionNoMacro _ expr = expr
 
 evalExpression :: Program -> [Value] -> [Value]
 evalExpression prog (VMacro name : expr) =
   case HM.lookup name (macros prog) of
-    Just m -> evalExpression prog (m ++ expr)
+    Just m -> evalExpression prog $ trace ("unfolding " ++ BS.unpack name) (m ++ expr)
     Nothing -> error $ "Macro " ++ BS.unpack name ++ " not found"
 evalExpression prog expr = evalExpressionNoMacro prog expr
 

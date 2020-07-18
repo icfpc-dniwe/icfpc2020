@@ -39,19 +39,21 @@ parseValue :: Parser Value
 parseValue = parseNumber <|> parseAp <|> parseNil <|> parseReference
 
 parseExpression :: Parser [Value]
-parseExpression = parseValue `sepBy1` char ' '
+parseExpression = parseValue `sepBy1` takeWhile1 (== ' ')
 
 parseMacro :: Parser Macro
 parseMacro = do
   lhs <- parseIdentifier
-  _ <- char ' '
+  skipWhile (== ' ')
   _ <- char '='
-  _ <- char ' '
+  skipWhile (== ' ')
   rhs <- parseExpression
   return $ (lhs, rhs)
 
 parseProgram :: Parser Program
 parseProgram = do
+  skipSpace
   ms <- parseMacro `sepBy1` endOfLine
+  skipSpace
   _ <- endOfInput
   return $ Program { macros = HM.fromList ms }
