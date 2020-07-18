@@ -49,16 +49,19 @@ fun1 name strategy f = ret
                        , funStrategy = strategy
                        }
 
+nameWithArg :: String -> Value -> String
+nameWithArg name arg = name ++ "(" ++ show arg ++ ")"
+
 funArg :: String -> Strategy -> (Value -> Function) -> Function
 funArg name strategy constr = ret
   where ret = fun1 name strategy $ \arg0 -> let f = constr arg0
-                                         in [VFunction $ f { funName = funName f ++ "(" ++ show arg0 ++ ")" }]
+                                         in [VFunction $ f { funName = nameWithArg (funName f) arg0 }]
 
 fun2 :: String -> Strategy -> (Value -> Value -> [Value]) -> Function
 fun2 name strategy f = funArg name strategy $ \arg0 -> fun1 name strategy $ \arg1 -> f arg0 arg1
 
 fun3 :: String -> Strategy -> (Value -> Value -> Value -> [Value]) -> Function
-fun3 name strategy f = funArg name strategy $ \arg0 -> fun2 name strategy $ \arg1 arg2 -> f arg0 arg1 arg2
+fun3 name strategy f = funArg name strategy $ \arg0 -> fun2 (nameWithArg name arg0) strategy $ \arg1 arg2 -> f arg0 arg1 arg2
 
 builtinT :: Function
 builtinT = fun2 "t" ByName (\a _ -> [a])
