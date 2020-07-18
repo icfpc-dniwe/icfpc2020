@@ -1,118 +1,99 @@
-
-{-# LANGUAGE LambdaCase #-}
-
 module ICFPC2020.Operations where
 
-{-
 import ICFPC2020.AST
 
-fun1 :: String -> (Value -> Maybe Value) -> Function
+fun1 :: String -> (Value -> [Value]) -> Function
 fun1 name f = ret
   where ret = Function { funName = name
                        , funApply = f
-                       , funRepresent = [VFunction ret]
                        }
 
-fun2 :: String -> (Value -> Value -> Maybe Value) -> Function
-fun2 name f = ret
-  where ret = fun1 name $ \arg1 -> Just $ VFunction $ Function { funName = name ++ "_ap"
-                                                               , funApply = \arg2 -> f arg1 arg2
-                                                               , funRepresent = [VAp, VFunction ret, arg1]
-                                                               }
+funArg :: String -> (Value -> Function) -> Function
+funArg name constr = ret
+  where ret = fun1 name $ \arg0 -> let f = constr arg0
+                                   in [VFunction $ f { funName = "ap " ++ funName f ++ " " ++ show arg0 }]
 
-fun3 :: String -> (Value -> Value -> Value -> Maybe Value) -> Function
-fun3 name f = ret
-  where ret = fun2 name $ \arg1 -> Just $ VFunction $ Function { funName = name ++ "_ap"
-                                                               , funApply = \arg2 -> f arg1 arg2
-                                                               , funRepresent = [VAp, VFunction ret, arg1]
-                                                               }
+fun2 :: String -> (Value -> Value -> [Value]) -> Function
+fun2 name f = funArg name $ \arg0 -> fun1 name $ \arg1 -> f arg0 arg1
 
-funNumber :: (Int -> Maybe Value) -> (Value -> Maybe Value)
-funNumber f (VNumber n) = f n
-funNumber _ _ = Nothing
+fun3 :: String -> (Value -> Value -> Value -> [Value]) -> Function
+fun3 name f = funArg name $ \arg0 -> fun2 name $ \arg1 arg2 -> f arg0 arg1 arg2
 
 builtinInc :: Function
-builtinInc = fun1 "inc" $ funNumber $ \n -> Just $ VNumber (n + 1)
+builtinInc = fun1 "inc" $ \(VNumber n) -> [VNumber (n + 1)]
 
 builtinDec :: Function
-builtinDec = fun1 "dec" $ funNumber $ \n -> Just $ VNumber (n - 1)
+builtinDec = fun1 "dec" $ \(VNumber n) -> [VNumber (n - 1)]
 
 builtinAdd :: Function
 builtinAdd = fun2 "add" op
-  where op a (VNumber 0) = Just a
-        op (VNumber 0) b = Just b
-        op (VNumber a) (VNumber b) = Just $ VNumber (a + b)
-        op _ _ = Nothing
+  where op a (VNumber 0) = [a]
+        op (VNumber 0) b = [b]
+        op (VNumber a) (VNumber b) = [VNumber (a + b)]
+        op _ _ = error "Impossible"
 
 builtinMul :: Function
 builtinMul = fun2 "mul" op
-  where op _ (VNumber 0) = Just (VNumber 0)
-        op (VNumber 0) _ = Just (VNumber 0)
-        op a (VNumber 1) = Just a
-        op (VNumber 1) b = Just b
-        op (VNumber a) (VNumber b) = Just $ VNumber (a * b)
-        op _ _ = Nothing
 
-churchTrue :: Function
-churchTrue = fun2 "t" op
-  where op x _ = Just x
-        op _ _ = Nothing
+  where op _ (VNumber 0) = [VNumber 0]
+        op (VNumber 0) _ = [VNumber 0]
+        op a (VNumber 1) = [a]
+        op (VNumber 1) b = [b]
+        op (VNumber a) (VNumber b) = [VNumber (a * b)]
+        op _ _ = error "Impossible"
 
-churchFalse :: Function
-churchFalse = fun2 "f" op
-  where op _ y = Just y
-        op _ _ = Nothing
+builtinTrue :: Function
+builtinTrue = fun2 "true" (\a _ -> [a])
 
-nil :: Value
-nil = VList []
+builtinFalse :: Function
+builtinFalse = fun2 "false" (\_ b -> [b])
 
-cons :: Function
-cons = fun2 "cons" op
-  where op (VNumber x) (VList ys) = Just . Vlist $ (VNumber x) : ys
-        op _ _ = Nothing
+valTrue :: Value
+valTrue = VFunction builtinTrue
 
-combC :: Function  -- TODO:
-combC = fun3 "c" op
-  where op (VFunction fun) x y = Just $ fun x y
-        op _ _ _ = Nothing
+valFalse :: Value
+valFalse = VFunction builtinFalse
 
-combB :: Function  -- TODO:
-combB = fun3 "b" op
-  where op (VFunction fx) (VFunction fy) z = Just $ fx $ fy z
-        op _ _ _ = Nothing
+-- A bit magical -- it's injected into stack when `ap nil` is encountered, otherwise it's not used.
+builtinNil :: Function
+builtinNil = fun1 "nil" (\_ -> [valTrue])
 
-combS :: Function  -- TODO:
-combS = fun3 "s" op
-  where op (VFunction fx) (VFunction fy) z = Just $ fx z (fy z)
-        op _ _ _ = Nothing
+builtinCons :: Function
+builtinCons = fun3 "cons" op
+  where op x0 x1 x2 = [VAp, VAp, x2, x0, x1]
 
-combI :: Function
-combI = fun1 "i" Just
+builtinC :: Function
+builtinC = fun3 "c" op
+  where op x0 x1 x2 = [VAp, VAp, x0, x2, x1]
 
-car :: Function
-car = fun1 "car" op
-  where op (VList (x:xs)) = Just x
-        op (VFunction fx) = Just (fx churchTrue)  -- TODO:
-        op _ _ = Nothing
+builtinB :: Function
+builtinB = fun3 "b" op
+  where op x0 x1 x2 = [VAp, x0, VAp, x1, x2]
 
-cdr :: Function
-cdr = fun1 "cdr" op
-  where op (VList (x:xs)) = Just xs
-        op (VFunction fx) = Just $ fx churchFalse  -- TODO:
-        op _ _ = Nothing
+builtinI :: Function
+builtinI = fun1 "i" (:[])
 
-lessThen :: Function
-lessThen = fun2 "lt" op
-  where op (VNumber x) (VNumber y) | x < y = Just churchTrue
-                                   | otherwise = Just churchFalse
-        op _ _ = Nothing
+builtinCar :: Function
+builtinCar = fun1 "car" op
+  where op x2 = [VAp, x2, valTrue]
 
-negate :: Function
-negate = fun1 "neg" op
-  where op (VNumber x) = Just (VNumber -x)
-        op _ = Nothing
+builtinCdr :: Function
+builtinCdr = fun1 "cdr" op
+  where op x2 = [VAp, x2, valFalse]
 
-buildinDiv :: Function
-buildinDiv = fun2 "div" op
-  where op (VNumber x) (VNumber y) = Just $ VNumber x + y
--}
+builtinLt :: Function
+builtinLt = fun2 "lt" op
+  where op (VNumber x) (VNumber y) | x < y = [valTrue]
+                                   | otherwise = [valFalse]
+        op _ _ = error "Impossible"
+
+builtinNeg :: Function
+builtinNeg = fun1 "neg" op
+  where op (VNumber x) = [VNumber $ negate x]
+        op _ = error "Impossible"
+
+builtinDiv :: Function
+builtinDiv = fun2 "div" op
+  where op x0 (VNumber 1) = [x0]
+        op (VNumber x) (VNumber y) = [VNumber (x `div` y)]
+        op _ _ = error "Impossible"
