@@ -20,8 +20,10 @@ main = catch (
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
         let galaxy = evalMacro problem "galaxy"
         print galaxy
-        let result = evalExpression problem ([VAp, VAp] ++ galaxy ++ [VNil, VAp, VAp, VFunction builtinCons, VNumber 0, VAp, VAp, VFunction builtinCons, VNumber 0, VNil])
-        print result
+        let result1 = evalExpression problem ([VAp] ++ galaxy ++ [VNil])
+        print result1
+        let result2 = evalExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VAp, VAp, VFunction builtinCons, VNumber 0, VNil])
+        print result2
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)
