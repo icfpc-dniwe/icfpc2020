@@ -41,7 +41,7 @@ builtinS = fun3 "s" ByName op
   where op x0 x1 x2 = [VAp, VAp, x0, x2, VAp, x1, x2]
 
 builtinI :: Function
-builtinI = fun1 "i" ByName (:[])
+builtinI = fun1 "i" ByName pure
 
 builtinCar :: Function
 builtinCar = fun1 "car" ByName op
