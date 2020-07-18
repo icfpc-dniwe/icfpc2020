@@ -19,9 +19,6 @@ data Value = VNumber !Int
            | VFunction !Function
            | VAp
 
-type Macro = (String, [Value])
-type Program = HashMap String [Value]
-
 instance Show Value where
   show (VNumber a) = show a
   show (VFunction f) = funName f
@@ -33,8 +30,10 @@ data Function = Function { funName :: String
                          , funApply :: !(Value -> [Value])
                          }
 
-data GlobalState = GlobalState { macros :: !(HashMap ByteString [Value])
-                               }
+type Macro = (ByteString, [Value])
+data Program = Program { macros :: !(HashMap ByteString [Value])
+                       }
+             deriving (Show)
 
-emptyState :: GlobalState
-emptyState = GlobalState { macros = HM.empty }
+emptyProgram :: Program
+emptyProgram = Program { macros = HM.empty }

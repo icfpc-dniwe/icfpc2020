@@ -1,5 +1,10 @@
 module ICFPC2020.Operations where
 
+import Data.HashMap.Strict (HashMap)
+import qualified Data.HashMap.Strict as HM
+import Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as BS
+
 import ICFPC2020.AST
 
 fun1 :: String -> (Value -> [Value]) -> Function
@@ -42,21 +47,21 @@ builtinMul = fun2 "mul" op
         op (VNumber a) (VNumber b) = [VNumber (a * b)]
         op _ _ = error "Impossible"
 
-builtinTrue :: Function
-builtinTrue = fun2 "true" (\a _ -> [a])
+builtinT :: Function
+builtinT = fun2 "t" (\a _ -> [a])
 
-builtinFalse :: Function
-builtinFalse = fun2 "false" (\_ b -> [b])
+builtinF :: Function
+builtinF = fun2 "f" (\_ b -> [b])
 
-valTrue :: Value
-valTrue = VFunction builtinTrue
+valT :: Value
+valT = VFunction builtinT
 
-valFalse :: Value
-valFalse = VFunction builtinFalse
+valF :: Value
+valF = VFunction builtinF
 
 -- A bit magical -- it's injected into stack when `ap nil` is encountered, otherwise it's not used.
 builtinNil :: Function
-builtinNil = fun1 "nil" (\_ -> [valTrue])
+builtinNil = fun1 "nil" (\_ -> [valT])
 
 builtinCons :: Function
 builtinCons = fun3 "cons" op
@@ -75,16 +80,16 @@ builtinI = fun1 "i" (:[])
 
 builtinCar :: Function
 builtinCar = fun1 "car" op
-  where op x2 = [VAp, x2, valTrue]
+  where op x2 = [VAp, x2, valT]
 
 builtinCdr :: Function
 builtinCdr = fun1 "cdr" op
-  where op x2 = [VAp, x2, valFalse]
+  where op x2 = [VAp, x2, valF]
 
 builtinLt :: Function
 builtinLt = fun2 "lt" op
-  where op (VNumber x) (VNumber y) | x < y = [valTrue]
-                                   | otherwise = [valFalse]
+  where op (VNumber x) (VNumber y) | x < y = [valT]
+                                   | otherwise = [valF]
         op _ _ = error "Impossible"
 
 builtinNeg :: Function
@@ -97,3 +102,23 @@ builtinDiv = fun2 "div" op
   where op x0 (VNumber 1) = [x0]
         op (VNumber x) (VNumber y) = [VNumber (x `div` y)]
         op _ _ = error "Impossible"
+
+builtins :: HashMap ByteString Function
+builtins = HM.fromList $ map (\f -> (BS.pack $ funName f, f)) $
+           [ builtinInc
+           , builtinDec
+           , builtinAdd
+           , builtinMul
+           , builtinT
+           , builtinF
+           , builtinNil
+           , builtinCons
+           , builtinC
+           , builtinB
+           , builtinI
+           , builtinCar
+           , builtinCdr
+           , builtinLt
+           , builtinNeg
+           , builtinDiv
+           ]

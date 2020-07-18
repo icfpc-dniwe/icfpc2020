@@ -2,30 +2,15 @@ module ICFPC2020.IO
   ( parseProgram
   ) where
 
-import Control.Monad
 import Data.Functor
-import Data.List
 import Control.Applicative
 import Data.Attoparsec.ByteString.Char8
 import qualified Data.Attoparsec.ByteString.Char8 as APC
 import qualified Data.ByteString.Char8 as BS
-import qualified Data.ByteString.Builder as BB
 import qualified Data.HashMap.Strict as HM
 
 import ICFPC2020.AST
-  
-import Debug.Trace
-
-parseBuiltinFunctionIdentifier :: Parser BS.ByteString
-parseBuiltinFunctionIdentifier = foldr1 (<|>) $ string <$> sortBy (flip compare) [
-    "inc", "dec", "add", "mul",
-    "div", "eq", "lt", "mod",
-    "dem", "send", "neg", "s",
-    "c", "b", "t", "f",
-    "pwr2", "i", "cons", "car", "cdr",
-    "nil", "isnil", "vec", "draw", "checkerboard",
-    "multipledraw", "send", "if0", "interact"
-  ]
+import ICFPC2020.Operations
 
 parseIdentifier :: Parser BS.ByteString
 parseIdentifier = do
@@ -40,20 +25,21 @@ parseNumber = do
 parseAp :: Parser Value
 parseAp = string "ap" $> VAp
 
-parseBuiltinFunction :: Parser Value 
-parseBuiltinFunction = do
-  funName' <- parseBuiltinFunctionIdentifier
-  let funName = BS.unpack funName'
-  let funApply = \x -> []
-  return $ VFunction Function {..}
+parseNil :: Parser Value
+parseNil = string "nil" $> VNil
 
-parseMacroExpression :: Parser Value
-parseMacroExpression = do
+parseReference :: Parser Value
+parseReference = do
   name <- parseIdentifier
-  return $ VMacro name
+  return $ case HM.lookup name builtins of
+    Just f -> VFunction f
+    Nothing -> VMacro name
 
 parseValue :: Parser Value
-parseValue = parseNumber <|> parseAp <|> parseBuiltinFunction <|> parseMacroExpression
+parseValue = parseNumber <|> parseAp <|> parseNil <|> parseReference
+
+parseExpression :: Parser [Value]
+parseExpression = parseValue `sepBy1` char ' '
 
 parseMacro :: Parser Macro
 parseMacro = do
@@ -61,11 +47,11 @@ parseMacro = do
   _ <- char ' '
   _ <- char '='
   _ <- char ' '
-  rhs <- parseValue `sepBy1` char ' '
-  return $ (BS.unpack lhs, rhs)
+  rhs <- parseExpression
+  return $ (lhs, rhs)
 
 parseProgram :: Parser Program
 parseProgram = do
   ms <- parseMacro `sepBy1` endOfLine
   _ <- endOfInput
-  return $ HM.fromList ms
+  return $ Program { macros = HM.fromList ms }
