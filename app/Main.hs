@@ -9,6 +9,7 @@ import Data.Attoparsec.ByteString.Lazy (Result(..), parse)
 import ICFPC2020.AST
 import ICFPC2020.IO
 import ICFPC2020.Reduce
+import ICFPC2020.Operations
 
 main = catch (
     do  
@@ -17,7 +18,10 @@ main = catch (
           case parse parseProgram input of
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
-        print $ evalMacro problem "galaxy"
+        let galaxy = evalMacro problem "galaxy"
+        print galaxy
+        let result = evalExpression problem ([VAp, VAp] ++ galaxy ++ [VNil, VAp, VAp, VFunction builtinCons, VNumber 0, VAp, VAp, VFunction builtinCons, VNumber 0, VNil])
+        print result
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)
