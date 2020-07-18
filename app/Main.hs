@@ -19,10 +19,13 @@ main = catch (
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
         let galaxy = evalMacro problem "galaxy"
+        putStr "hoho "
         print galaxy
         let result1 = evalExpression problem ([VAp] ++ galaxy ++ [VNil])
+        putStr "haha "
         print result1
-        let result2 = evalExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VAp, VAp, VFunction builtinCons, VNumber 0, VNil])
+        let result2 = evalExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
+        putStr "hihi "
         print result2
 
         --args <- getArgs

@@ -6,7 +6,7 @@ import qualified Data.HashMap.Strict as HM
 
 import ICFPC2020.AST
 
--- A bit magical -- it's injected into stack when `ap nil` is encountered, otherwise it's not used.
+-- A bit magical -- it's injected when `ap nil` is encountered, otherwise it's not used.
 builtinNil :: Function
 builtinNil = fun1 "nil" ByName (\_ -> [valT])
 
