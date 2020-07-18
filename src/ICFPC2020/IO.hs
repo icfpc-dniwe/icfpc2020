@@ -44,17 +44,16 @@ parseBuiltinFunction :: Parser Value
 parseBuiltinFunction = do
   funName' <- parseBuiltinFunctionIdentifier
   let funName = BS.unpack funName'
-  let funRepresent = []
-  let funApply = \x -> Nothing
+  let funApply = \x -> []
   return $ VFunction Function {..}
 
-parseVariable :: Parser Value
-parseVariable = do
+parseMacroExpression :: Parser Value
+parseMacroExpression = do
   name <- parseIdentifier
-  return $ VVariable $ BS.unpack name
+  return $ VMacro name
 
 parseValue :: Parser Value
-parseValue = parseNumber <|> parseAp <|> parseBuiltinFunction <|> parseVariable
+parseValue = parseNumber <|> parseAp <|> parseBuiltinFunction <|> parseMacroExpression
 
 parseMacro :: Parser Macro
 parseMacro = do
