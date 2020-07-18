@@ -63,11 +63,10 @@ parseMacro = do
   _ <- char '='
   _ <- char ' '
   rhs <- parseValue `sepBy1` char ' '
-  _ <- endOfLine
   return $ (BS.unpack lhs, rhs)
 
 parseProgram :: Parser Program
 parseProgram = do
-  ms <- many parseMacro
-  --_ <- endOfInput
+  ms <- parseMacro `sepBy1` endOfLine
+  _ <- endOfInput
   return $ HM.fromList ms

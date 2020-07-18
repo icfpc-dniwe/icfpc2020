@@ -2,6 +2,7 @@ import System.Environment
 import Network.HTTP.Simple
 import Data.ByteString.Lazy.UTF8 as BLU
 import qualified Data.ByteString.Lazy as BL
+import qualified Data.HashMap.Strict as HM
 import Control.Exception
 import Data.Attoparsec.ByteString.Lazy (Result(..), parse)
 
@@ -10,12 +11,13 @@ import ICFPC2020.IO
 
 main = catch (
     do  
-        input <- BL.readFile $ "/home/amadeus/icfpc2020/data/galaxy.txt"
+        input <- BL.readFile $ "data/galaxy.txt"
         problem <-
           case parse parseProgram input of
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
         putStrLn $ show problem
+        putStrLn $ show $ HM.size problem
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)
