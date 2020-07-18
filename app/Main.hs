@@ -21,10 +21,10 @@ main = catch (
         let galaxy = evalMacro problem "galaxy"
         putStr "hoho "
         print galaxy
-        let result1 = evalExpression problem ([VAp] ++ galaxy ++ [VNil])
+        let result1 = evalOneExpression problem ([VAp] ++ galaxy ++ [VNil])
         putStr "haha "
         print result1
-        let result2 = evalExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
+        let result2 = evalOneExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
         putStr "hihi "
         print result2
 
