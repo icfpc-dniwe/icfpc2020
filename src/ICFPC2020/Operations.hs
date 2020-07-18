@@ -54,7 +54,7 @@ builtinCdr = fun1 "cdr" ByName op
 builtinLt :: Function
 builtinLt = fun2 "lt" ByValue op
   where op (VNumber x) (VNumber y) = [valCheck (x < y)]
-        op _ _ = error "Impossible"
+        op a b = error $ show a ++ " and " ++ show b ++ " are not comparable"
 
 builtinNeg :: Function
 builtinNeg = fun1 "neg" ByValue op
@@ -69,7 +69,12 @@ builtinDiv = fun2 "div" ByValue op
 builtinEq :: Function
 builtinEq = fun2 "eq" ByValue op
   where op (VNumber x) (VNumber y) = [valCheck (x == y)]
-        op _ _ = error "Impossible"
+        op a b = error $ show a ++ " and " ++ show b ++ " are not comparable"
+
+builtinIsnil :: Function
+builtinIsnil = fun1 "isnil" ByValue op
+  where op VNil = [valT]
+        op _ = [valF]
 
 builtins :: HashMap ByteString Function
 builtins = HM.fromList $ map (\f -> (BS.pack $ funName f, f)) $
@@ -90,4 +95,5 @@ builtins = HM.fromList $ map (\f -> (BS.pack $ funName f, f)) $
            , builtinNeg
            , builtinDiv
            , builtinEq
+           , builtinIsnil
            ]
