@@ -48,8 +48,14 @@ evalExpression (VMacro name : expr) = do
     Nothing -> error $ "Macro " ++ BS.unpack name ++ " not found"
 evalExpression expr = evalExpressionNoMacro expr
 
+simplifyProgram :: Program -> Program
+simplifyProgram prog = runReader (runEval prepare) prog
+  where prepare = do
+          macros' <- mapM evalExpression $ macros prog
+          return $ Program { macros = macros' }
+
 evalOneExpression :: Program -> [Value] -> [Value]
 evalOneExpression prog expr = runReader (runEval $ evalExpression expr) prog
 
 evalMacro :: Program -> ByteString -> [Value]
-evalMacro prog name = evalOneExpression prog (macros prog HM.! name)
+evalMacro prog name = runReader (runEval $ evalExpression $ macros prog HM.! name) prog

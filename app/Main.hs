@@ -14,19 +14,18 @@ import ICFPC2020.Operations
 main = catch (
     do  
         input <- BL.readFile $ "data/galaxy.txt"
-        problem <-
+        rawProblem <-
           case parse parseProgram input of
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
+        putStr "lolol "
+        let !problem = simplifyProgram rawProblem
         let galaxy = evalMacro problem "galaxy"
         putStr "hoho "
         print galaxy
-        let result1 = evalOneExpression problem ([VAp] ++ galaxy ++ [VNil])
-        putStr "haha "
-        print result1
-        let result2 = evalOneExpression problem ([VAp] ++ result1 ++ [VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
+        let result1 = evalOneExpression problem ([VAp] ++ galaxy ++ [VAp, VFunction builtinCons, VNil, VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
         putStr "hihi "
-        print result2
+        print result1
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)

@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 6ee07a244cb269ce383e5a59b058c16af2ad156cb111527b6bf30a3402f8e336
+-- hash: cf2948d615eafdd03e988b718f872807d03867c4a5af1b2255046ea4c714dd2c
 
 name:           icfpc2020
 version:        0.1.0.0
@@ -23,7 +23,7 @@ library
       Paths_icfpc2020
   hs-source-dirs:
       src
-  default-extensions: LambdaCase RecordWildCards OverloadedStrings GeneralizedNewtypeDeriving DerivingStrategies
+  default-extensions: LambdaCase RecordWildCards OverloadedStrings GeneralizedNewtypeDeriving DerivingStrategies BangPatterns
   ghc-options: -O2 -Wall
   build-depends:
       attoparsec >=0.13
@@ -41,7 +41,7 @@ executable main
       Paths_icfpc2020
   hs-source-dirs:
       app
-  default-extensions: LambdaCase RecordWildCards OverloadedStrings GeneralizedNewtypeDeriving DerivingStrategies
+  default-extensions: LambdaCase RecordWildCards OverloadedStrings GeneralizedNewtypeDeriving DerivingStrategies BangPatterns
   ghc-options: -threaded -O2 -Wall -rtsopts -with-rtsopts=-N
   build-depends:
       attoparsec >=0.13
