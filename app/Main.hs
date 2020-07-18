@@ -15,6 +15,7 @@ main = catch (
           case parse parseProgram input of
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
+        putStrLn $ show problem
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)

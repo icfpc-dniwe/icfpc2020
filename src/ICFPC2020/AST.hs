@@ -1,7 +1,7 @@
 module ICFPC2020.AST where
 
 import Data.HashMap.Strict (HashMap)
-import qualified Data.HashMap.Strict as HM
+import Data.HashMap.Strict
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Char8 as BS
 import Control.Monad.Reader
@@ -17,8 +17,8 @@ type Program = HashMap String [Value]
 
 instance Show Value where
   show (VNumber a) = show a
-  show (VFunction f) = funName f
-  show (VVariable v) = v
+  show (VFunction f) = "fun_" ++ funName f
+  show (VVariable v) = "var_" ++ v
   show (VList vs) = show vs
   show VAp = "ap"
 

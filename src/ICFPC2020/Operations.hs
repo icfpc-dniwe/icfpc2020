@@ -1,7 +1,9 @@
+
 {-# LANGUAGE LambdaCase #-}
 
 module ICFPC2020.Operations where
 
+{-
 import ICFPC2020.AST
 
 fun1 :: String -> (Value -> Maybe Value) -> Function
@@ -113,5 +115,4 @@ negate = fun1 "neg" op
 buildinDiv :: Function
 buildinDiv = fun2 "div" op
   where op (VNumber x) (VNumber y) = Just $ VNumber x + y
-
-
+-}

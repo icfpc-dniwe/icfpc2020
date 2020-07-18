@@ -16,8 +16,8 @@ import ICFPC2020.AST
   
 import Debug.Trace
 
-parseBuiltinFunctionIdentifier :: Parser String
-parseBuiltinFunctionIdentifier = string <$> [
+parseBuiltinFunctionIdentifier :: Parser BS.ByteString
+parseBuiltinFunctionIdentifier = foldr1 (<|>) $ string <$> sortBy (flip compare) [
     "inc", "dec", "add", "mul",
     "div", "eq", "lt", "mod",
     "dem", "send", "neg", "s",
@@ -27,10 +27,10 @@ parseBuiltinFunctionIdentifier = string <$> [
     "multipledraw", "send", "if0", "interact"
   ]
 
-parseIdentifier :: Parser String
+parseIdentifier :: Parser BS.ByteString
 parseIdentifier = do
   idt <- APC.takeWhile $ inClass ":a-zA-Z0-9_"
-  return $ BS.unpack idt
+  return $ idt
 
 parseNumber :: Parser Value
 parseNumber = do
@@ -42,7 +42,8 @@ parseAp = string "ap" $> VAp
 
 parseBuiltinFunction :: Parser Value 
 parseBuiltinFunction = do
-  funName <- parseBuiltinFunctionIdentifier
+  funName' <- parseBuiltinFunctionIdentifier
+  let funName = BS.unpack funName'
   let funRepresent = []
   let funApply = \x -> Nothing
   return $ VFunction Function {..}
@@ -50,18 +51,23 @@ parseBuiltinFunction = do
 parseVariable :: Parser Value
 parseVariable = do
   name <- parseIdentifier
-  return $ VVariable name
+  return $ VVariable $ BS.unpack name
 
 parseValue :: Parser Value
-parseValue = parseNumber <|> parseBuiltinFunction <|> parseVariable
+parseValue = parseNumber <|> parseAp <|> parseBuiltinFunction <|> parseVariable
 
 parseMacro :: Parser Macro
 parseMacro = do
   lhs <- parseIdentifier
-  rhs <- many $ parseValue `sepBy1` char ' '
-  return (lhs, rhs)
+  _ <- char ' '
+  _ <- char '='
+  _ <- char ' '
+  rhs <- parseValue `sepBy1` char ' '
+  _ <- endOfLine
+  return $ (BS.unpack lhs, rhs)
 
 parseProgram :: Parser Program
 parseProgram = do
-  ms <- many $ parseMacro `sepBy1` endOfLine
+  ms <- many parseMacro
+  --_ <- endOfInput
   return $ HM.fromList ms
