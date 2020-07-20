@@ -1,6 +1,7 @@
 import System.Environment
 import Network.HTTP.Simple
 import Data.ByteString.Lazy.UTF8 as BLU
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.HashMap.Strict as HM
 import Control.Exception
@@ -10,6 +11,7 @@ import ICFPC2020.AST
 import ICFPC2020.IO
 import ICFPC2020.Reduce
 import ICFPC2020.Operations
+import ICFPC2020.Generate
 
 main = catch (
     do  
@@ -18,14 +20,20 @@ main = catch (
           case parse parseProgram input of
             Done _ r -> return r
             Fail _ ctx e -> fail ("Failed to parse in " ++ show ctx ++ ": " ++ e)
-        putStr "lolol "
-        let !problem = simplifyProgram rawProblem
-        let galaxy = evalMacro problem "galaxy"
-        putStr "hoho "
-        print galaxy
-        let result1 = evalOneExpression problem ([VAp] ++ galaxy ++ [VAp, VFunction builtinCons, VNil, VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
-        putStr "hihi "
-        print result1
+        --putStr "lolol "
+        --let !problem = simplifyProgram rawProblem
+        --let galaxy = evalMacro problem "galaxy"
+        --putStr "hoho "
+        --print galaxy
+        --let result1 = evalOneExpression problem ([VAp, VAp] ++ galaxy ++ [VNil, VAp, VAp, VFunction builtinCons, VNumber 0, VNumber 0])
+        --putStr "hihi "
+        --print result1
+
+        let lns = [ "module ICFPC2020.Generated (galaxy) where" :: BS.ByteString,
+                      "import ICFPC2020.AST" :: BS.ByteString,
+                      "import ICFPC2020.GeneratedOperations" :: BS.ByteString,
+                      generateProgram rawProblem ]
+        BS.writeFile "src/ICFPC2020/Generated.hs" $ BS.intercalate "\n" lns
 
         --args <- getArgs
         --putStrLn ("ServerUrl: " ++ args!!0 ++ "; PlayerKey: " ++ args!!1)
